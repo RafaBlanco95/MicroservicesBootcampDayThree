@@ -1,0 +1,5 @@
+com\everis\bootcamp\priceservice\controller\PriceController.class
+com\everis\bootcamp\priceservice\repository\PriceRepository.class
+com\everis\bootcamp\priceservice\service\PriceService.class
+com\everis\bootcamp\priceservice\PriceserviceApplication.class
+com\everis\bootcamp\priceservice\model\Prices.class

@@ -1,0 +1,20 @@
+server:
+ port: 8888
+spring:
+  application:
+    name: bootcamp-server
+  cloud:
+    gateway:      
+      routes:
+      - id: BOOTCAMP-PRICESERVICE
+        uri: 'http://localhost:8080/'
+        metadata:
+          Prefix: /price
+        predicates:
+        - Path=/price/**
+      - id: BOOTCAMP-PRODUCTSERVICE
+        uri: 'http://localhost:8089/'
+        metadata:
+          Prefix: /product
+        predicates:
+        - Path=/product/**

@@ -1,0 +1,81 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: bootcamp-productservice
+# Taller 3 - Integración con Eureka ->
+  cloud:
+    config:
+      import-check:
+        enabled: false
+# <- Taller 3 - Integración con Eureka
+bootcamp:
+  service:
+    price-service:
+       endpoint: http://localhost:8088/prices/get-price/{id}
+       type: in-memory # in-memory, remote
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+#resilience4j.retry:
+#  configs:
+#    default:
+#      maxRetryAttempts: 3
+#      waitDuration: 100
+#      retryExceptions:
+#        - org.springframework.web.client.RestClientException
+#        - org.springframework.web.client.HttpServerErrorException
+#        - java.util.concurrent.TimeoutException
+#        - java.io.IOException
+#  instances:
+#    price-service:
+#      baseConfig: default
+
+resilience4j.retry:
+  configs:
+    default:
+      maxRetryAttempts: 4
+      waitDuration: 500
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+  instances:
+    prices-service:
+      baseConfig: default
+
+resilience4j.circuitbreaker:
+   configs:
+     default:
+       #Número de peticiones que se consideran para la evaluación de otros valores de la configuración.
+       #Puede ser una ventana temporal (cuenta las peticiones en una franja de tiempo) o una ventana por
+       #número de peticiones (opción por defecto y la que se está empleando en esta conf)
+       slidingWindowSize: 4
+       #Mínimo número de llamadas para abrir el Circuit Breaker
+       minimumNumberOfCalls: 2
+       #Número de llamadas que el Circuit Breaker permite mientras se encuentra en estado HALF_OPEN antes de
+       #volver a OPEN si éstas fallan
+       permittedNumberOfCallsInHalfOpenState: 1
+       automaticTransitionFromOpenToHalfOpenEnabled: true
+       #Espacio de tiempo hasta que el Circuit Breaker pasa de OPEN a HALF_OPEN
+       waitDurationInOpenState: 15s
+       #Ratio de errores de las peticiones para que el Circuit Breaker cambie el estado a OPEN
+       failureRateThreshold: 50
+       #Tipos de excepciones que abarca el Circuit Breaker
+       recordExceptions:
+         - org.springframework.web.client.HttpServerErrorException
+         - java.util.concurrent.TimeoutException
+         - java.io.IOException
+   instances:
+     prices-service:
+       baseConfig: default
+
+
+
+
